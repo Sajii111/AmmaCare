@@ -1,16 +1,12 @@
-FROM node:18-alpine
+FROM node:18
 
 WORKDIR /app
 
-# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the app
 COPY . .
 
-# Expose the port your app runs on
-EXPOSE 3000
+EXPOSE 8080
 
-# Start the server
 CMD ["npm", "start"]
