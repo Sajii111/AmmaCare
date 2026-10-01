@@ -10,6 +10,8 @@ const { loadUser, requireLogin, mountAuthRoutes } = require('./lib/auth');
 const { db } = require('./lib/firebase');
 
 const app = express();
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
 const PORT = process.env.PORT || process.env.SUGA_PUBLIC_TARGET_PORT || 80;
 
 app.use(express.json({ limit: '100kb' }));
@@ -161,7 +163,7 @@ app.get('/api/posts', async (req, res) => {
     res.json({ posts: posts.map(p => toPublicPost(p, req.user)), categories: CATEGORIES });
   } catch (err) {
     console.error('GET /api/posts error:', err);
-    res.status(500).json({ error: 'Could not load posts: ' + err.message });
+    res.status(500).json({ error: 'Could not load posts right now. Please try again.' });
   }
 });
 
@@ -184,7 +186,7 @@ app.post('/api/posts', requireLogin, async (req, res) => {
     res.status(201).json(toPublicPost(post, req.user));
   } catch (err) {
     console.error('POST /api/posts error:', err);
-    res.status(500).json({ error: 'Could not save the post: ' + err.message });
+    res.status(500).json({ error: 'Could not save your post right now. Please try again.' });
   }
 });
 
@@ -210,7 +212,7 @@ app.post('/api/posts/:id/replies', requireLogin, async (req, res) => {
     res.status(201).json(publicReply);
   } catch (err) {
     console.error('reply error:', err);
-    res.status(500).json({ error: 'Could not save the reply: ' + err.message });
+    res.status(500).json({ error: 'Could not save your reply right now. Please try again.' });
   }
 });
 
@@ -230,7 +232,7 @@ app.post('/api/posts/:id/like', requireLogin, async (req, res) => {
     res.json({ likes, likedByMe: i === -1 });
   } catch (err) {
     console.error('like error:', err);
-    res.status(500).json({ error: 'Could not update the like: ' + err.message });
+    res.status(500).json({ error: 'Could not update the like right now. Please try again.' });
   }
 });
 
