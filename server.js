@@ -10,7 +10,7 @@ const { loadUser, requireLogin, mountAuthRoutes } = require('./lib/auth');
 const { db } = require('./lib/firebase');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || process.env.SUGA_PUBLIC_TARGET_PORT || 80;
 
 app.use(express.json({ limit: '100kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
