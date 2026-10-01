@@ -1,0 +1,20 @@
+{
+  "name": "ammacare",
+  "version": "1.0.0",
+  "description": "AmmaCare - pregnancy and toddler care web app for Sri Lankan mothers (Gemini AI + Prolog symptom engine)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check-gemini": "node scripts/check-gemini.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^14.5.0",
+    "tau-prolog": "^0.3.4"
+  }
+}

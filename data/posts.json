@@ -1,0 +1,58 @@
+[
+  {
+    "id": "seed-1",
+    "title": "What helped my morning sickness in the first trimester",
+    "body": "I was sick every morning until about week 14. Plain crackers before getting out of bed, ginger tea and small portions of rice and dhal helped me a lot. My PHM also told me to sip water often instead of drinking a lot at once. Hang in there, it does get better!",
+    "category": "My story",
+    "name": "Dilini, Kandy",
+    "likes": 12,
+    "replies": [
+      {
+        "id": "seed-1-r1",
+        "name": "Fathima",
+        "body": "Ginger tea saved me too. Thank you for sharing!",
+        "createdAt": "2026-09-10T08:30:00.000Z"
+      }
+    ],
+    "createdAt": "2026-09-09T05:10:00.000Z"
+  },
+  {
+    "id": "seed-2",
+    "title": "Is it okay to eat ripe papaya in the second trimester?",
+    "body": "My mother says to avoid all papaya, but my friend says ripe papaya is fine. I am 22 weeks. What did your doctors tell you?",
+    "category": "Question",
+    "name": "Anonymous mother",
+    "likes": 5,
+    "replies": [
+      {
+        "id": "seed-2-r1",
+        "name": "Nimmi",
+        "body": "My VOG said fully ripe papaya in normal amounts is fine, but to avoid unripe or semi-ripe papaya. Best to ask at your clinic too.",
+        "createdAt": "2026-09-15T11:00:00.000Z"
+      }
+    ],
+    "createdAt": "2026-09-14T16:45:00.000Z"
+  },
+  {
+    "id": "seed-3",
+    "title": "Easy first foods my 7-month-old loves",
+    "body": "We started with rice kanda, then mashed pumpkin and carrot, then dhal mixed with rice. Now she loves mashed banana and a little fish. No salt or sugar yet. Starting slowly with one new food at a time worked for us.",
+    "category": "Toddlers",
+    "name": "Tharuka, Galle",
+    "likes": 9,
+    "replies": [],
+    "createdAt": "2026-09-18T07:20:00.000Z"
+  },
+  {
+    "id": "c322e03c-dd9d-4c22-abe8-2d34c904c845",
+    "authorId": "8d50ed8c-d674-4812-80d2-4a5ae75880a5",
+    "title": "sadsadsad",
+    "body": "sdsdsdsdsdssssssssssssss",
+    "category": "Pregnancy",
+    "name": "test",
+    "likes": 0,
+    "likedBy": [],
+    "replies": [],
+    "createdAt": "2026-10-01T05:33:39.474Z"
+  }
+]

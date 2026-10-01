@@ -1,0 +1,45 @@
+{
+  "_note": "Where the symptom checker sends people, by specialty. These are public hospitals. Add your own verified doctors in the same format, e.g. { \"name\": \"Dr. A. Silva\", \"detail\": \"Consultant Obstetrician\", \"place\": \"Kandy\" }.",
+  "specialties": {
+    "obstetrician": { "title": "Obstetrician (VOG)", "detail": "Consultant Obstetrician and Gynaecologist" },
+    "paediatrician": { "title": "Paediatrician", "detail": "Consultant Paediatrician" },
+    "physician": { "title": "Consultant Physician", "detail": "General medicine" },
+    "gp": { "title": "Family doctor (GP)", "detail": "General Practitioner or MOH clinic" },
+    "psychiatrist": { "title": "Mental health specialist", "detail": "Consultant Psychiatrist" },
+    "ent": { "title": "ENT specialist", "detail": "Ear, nose and throat surgeon" },
+    "dermatologist": { "title": "Dermatologist", "detail": "Consultant Dermatologist" }
+  },
+  "places": {
+    "obstetrician": [
+      { "name": "Castle Street Hospital for Women", "detail": "Maternity hospital", "place": "Colombo 08" },
+      { "name": "De Soysa Hospital for Women", "detail": "Maternity hospital", "place": "Colombo 08" },
+      { "name": "Teaching Hospital Kandy", "detail": "Obstetrics unit", "place": "Kandy" },
+      { "name": "Teaching Hospital Karapitiya", "detail": "Obstetrics unit", "place": "Galle" }
+    ],
+    "paediatrician": [
+      { "name": "Lady Ridgeway Hospital for Children", "detail": "Children's hospital", "place": "Colombo 08" },
+      { "name": "Sirimavo Bandaranaike Specialised Children's Hospital", "detail": "Children's hospital", "place": "Peradeniya" },
+      { "name": "Teaching Hospital Karapitiya", "detail": "Paediatric unit", "place": "Galle" }
+    ],
+    "physician": [
+      { "name": "National Hospital of Sri Lanka", "detail": "Medical clinics", "place": "Colombo 10" },
+      { "name": "Teaching Hospital Kandy", "detail": "Medical clinics", "place": "Kandy" }
+    ],
+    "gp": [
+      { "name": "Your MOH office", "detail": "Free antenatal and child clinics", "place": "Your area" },
+      { "name": "Nearest Divisional or Base Hospital", "detail": "OPD", "place": "Your area" }
+    ],
+    "psychiatrist": [
+      { "name": "National Mental Health Helpline", "detail": "Call 1926, free and confidential", "place": "Island-wide" },
+      { "name": "National Institute of Mental Health", "detail": "Outpatient clinics", "place": "Angoda" }
+    ],
+    "ent": [
+      { "name": "National Hospital of Sri Lanka", "detail": "ENT clinic", "place": "Colombo 10" },
+      { "name": "Lady Ridgeway Hospital for Children", "detail": "ENT clinic", "place": "Colombo 08" }
+    ],
+    "dermatologist": [
+      { "name": "National Hospital of Sri Lanka", "detail": "Dermatology clinic", "place": "Colombo 10" },
+      { "name": "Teaching Hospital Kandy", "detail": "Dermatology clinic", "place": "Kandy" }
+    ]
+  }
+}

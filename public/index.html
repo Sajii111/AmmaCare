@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AmmaCare: pregnancy and little ones, Sri Lanka</title>
+  <meta name="description" content="Pregnancy tracker, AI food checks, symptom guidance, articles and a community for Sri Lankan mothers and young children.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%234F6B44' d='M16 29c0-9 3-17 12-24-2 12-6 20-12 24Zm0 0C16 21 12 14 4 9c1 10 5 17 12 20Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Intro animation: a mother cradling her baby, drawn line by line. Plays once per visit. -->
+<div class="intro" id="intro" role="presentation">
+  <div class="intro-inner">
+    <svg class="intro-art" viewBox="0 0 300 300" aria-hidden="true">
+      <circle class="glow" cx="150" cy="168" r="122"/>
+      <g class="lines">
+        <!-- mother: body and dress -->
+        <path class="fillin body" pathLength="1" style="--d:.1s" d="M120 116 C98 128 90 162 92 204 C93 236 88 256 82 274 L214 274 C208 250 202 226 200 204 C198 170 186 136 160 120 C148 113 132 112 120 116Z"/>
+        <!-- mother: head bowed towards the baby, with a hair bun -->
+        <circle class="fillin skin" pathLength="1" style="--d:.45s" cx="142" cy="86" r="27"/>
+        <circle class="fillin hair" pathLength="1" style="--d:.65s" cx="119" cy="70" r="12"/>
+        <path class="fillin hair" pathLength="1" style="--d:.75s" d="M117 92 C112 70 126 56 146 58 C160 60 168 70 168 80 C156 74 140 76 130 90 C126 96 122 98 117 92Z"/>
+        <!-- baby wrapped in a blanket, lying in her arms -->
+        <ellipse class="fillin wrap" pathLength="1" style="--d:1s" cx="146" cy="168" rx="46" ry="23" transform="rotate(-30 146 168)"/>
+        <circle class="fillin baby" pathLength="1" style="--d:1.25s" cx="186" cy="136" r="15"/>
+        <!-- her arm holding the baby -->
+        <path class="arm" pathLength="1" style="--d:1.45s" d="M168 128 C192 146 196 178 178 196 C160 212 124 208 100 192"/>
+      </g>
+      <path class="eye" d="M150 92 q4 3 8 0"/>
+      <path class="eye" d="M188 138 q3 2.5 6 0"/>
+      <path class="heart" d="M214 98 c-4-6-13-5-13 3 c0 6 7 9 13 14 c6-5 13-8 13-14 c0-8-9-9-13-3z"/>
+    </svg>
+    <div class="intro-brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29c0-9 3-17 12-24-2 12-6 20-12 24Zm0 0C16 21 12 14 4 9c1 10 5 17 12 20Z"/></svg>
+      AmmaCare
+    </div>
+    <p class="intro-tag">Healthy amma, happy baby.</p>
+  </div>
+  <button type="button" class="intro-skip" id="introSkip">Skip</button>
+</div>
+<script>
+  // Show the intro only on the first page load of each visit
+  try { if (sessionStorage.getItem('ammacare.introSeen')) document.getElementById('intro').remove(); } catch (e) {}
+</script>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <a href="#home" class="brand" aria-label="AmmaCare home">
+    <svg class="brand-leaf" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29c0-9 3-17 12-24-2 12-6 20-12 24Zm0 0C16 21 12 14 4 9c1 10 5 17 12 20Z"/></svg>
+    AmmaCare
+  </a>
+  <nav class="nav" id="siteNav">
+    <a href="#home" data-page="home">Home</a>
+    <a href="#tracker" data-page="tracker">Tracker</a>
+    <a href="#food" data-page="food">Food check</a>
+    <a href="#nutrition" data-page="nutrition">Nutrition</a>
+    <a href="#symptoms" data-page="symptoms">Symptoms</a>
+    <a href="#articles" data-page="articles">Articles</a>
+    <a href="#community" data-page="community">Community</a>
+  </nav>
+  <div class="account" id="accountArea"></div>
+  <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="profile-bar">
+  <span class="mono-label">Advice for</span>
+  <div class="pill-group" data-role="who" role="group" aria-label="Who is the advice for">
+    <button type="button" class="pill" data-who="mother">Pregnant or breastfeeding</button>
+    <button type="button" class="pill" data-who="child">My child</button>
+  </div>
+  <label class="child-age hidden">Age
+    <input type="number" id="childAge" min="0" max="72" value="24" inputmode="numeric"> months
+  </label>
+  <a class="context-chip" id="contextChip" href="#tracker"></a>
+</div>
+
+<div class="demo-banner hidden" id="demoBanner">Demo mode is on. AI sections show sample results, not live Gemini answers.</div>
+
+<main id="main">
+
+  <!-- ================= HOME ================= -->
+  <section class="page" id="page-home" data-page="home">
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>Healthy amma,<br>happy baby.</h1>
+        <p class="lead">Follow your pregnancy week by week, ask AI whether a food is good for you or your child, understand symptoms and hear from other Sri Lankan mothers.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#tracker">Start my tracker</a>
+          <a class="btn btn-outline" href="#food">Check a food</a>
+        </div>
+      </div>
+      <div class="hero-glance card" id="homeGlance"></div>
+    </div>
+
+    <div class="feature-grid">
+      <a class="feature card" href="#tracker">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <h3>Trimester tracker</h3>
+        <p>Your week, due date, baby's size and an AI activity plan for every week.</p>
+      </a>
+      <a class="feature card" href="#food">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18a9 9 0 0 1-18 0Z"/><path d="M12 12c0-4 2-7 6-8-1 4-3 7-6 8Z"/></svg>
+        <h3>Is it healthy?</h3>
+        <p>Type any food and get a clear answer for your stage of pregnancy or your child's age.</p>
+      </a>
+      <a class="feature card" href="#nutrition">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <h3>Nutrition, day by day</h3>
+        <p>Nutrients for your exact amount, and what AI predicts if you eat it for 1 to 7 days.</p>
+      </a>
+      <a class="feature card" href="#symptoms">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="12" r="2"/></svg>
+        <h3>Symptom checker</h3>
+        <p>Pick symptoms to see possible causes and where to get care.</p>
+      </a>
+      <a class="feature card" href="#articles">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4Z"/><path d="M20 4h-4a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h5Z"/></svg>
+        <h3>Articles</h3>
+        <p>Short, practical reads on pregnancy, feeding and toddler health.</p>
+      </a>
+      <a class="feature card" href="#community">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4Z"/></svg>
+        <h3>Community</h3>
+        <p>Ask questions and share your experience with other mothers.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= TRACKER ================= -->
+  <section class="page" id="page-tracker" data-page="tracker">
+    <header class="page-head">
+      <div>
+        <h2>Your pregnancy, week by week</h2>
+        <p>Count your days from the first day of your last period, the same way your clinic does.</p>
+      </div>
+      <span class="section-index">01 &mdash; Tracker</span>
+    </header>
+
+    <div class="gate card hidden" data-gate="tracker">
+      <svg class="gate-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <span class="mono-label accent">For members</span>
+      <h3>Sign in to use your trimester tracker</h3>
+      <p>Your week, due date, baby's size and the AI weekly activity plan are saved to your account, so they follow you on any phone or computer.</p>
+      <div class="gate-actions">
+        <button type="button" class="btn btn-primary" data-auth="register" data-reason="Create a free account to use the trimester tracker.">Create a free account</button>
+        <button type="button" class="btn btn-outline" data-auth="login" data-reason="Sign in to use the trimester tracker.">Sign in</button>
+      </div>
+      <p class="fine-print">As a guest you can still use Food check, Nutrition, Symptoms and Articles.</p>
+    </div>
+
+    <div data-members="tracker">
+    <div class="tracker-layout">
+      <form class="card" id="trackerForm" novalidate>
+        <div class="pill-group" role="group" aria-label="How to enter your pregnancy">
+          <button type="button" class="pill active" data-mode="days">Days pregnant</button>
+          <button type="button" class="pill" data-mode="lmp">Last period date</button>
+        </div>
+        <label class="field" data-for="days"><span class="mono-label">Days pregnant</span>
+          <input type="number" id="daysInput" min="1" max="300" placeholder="For example 98" inputmode="numeric">
+        </label>
+        <label class="field hidden" data-for="lmp"><span class="mono-label">First day of last period</span>
+          <input type="date" id="lmpInput">
+        </label>
+        <button class="btn btn-primary" type="submit">Update my tracker</button>
+        <p class="hint">Saved to your account, so it works on any device. Your count moves forward by itself each day.</p>
+        <div id="trackerError"></div>
+      </form>
+
+      <div class="card tracker-result" id="trackerResult"></div>
+    </div>
+
+    <div id="trimesterTips"></div>
+
+    <div class="card">
+      <span class="mono-label accent">AI weekly planner</span>
+      <h3 class="card-title">Activities for any week</h3>
+      <p class="muted">Choose a week to see safe activities, what is happening with your baby and signs to watch for.</p>
+      <form id="activityForm" class="inline-form">
+        <select id="activityWeek" aria-label="Week of pregnancy"></select>
+        <button class="btn btn-primary" type="submit">Make my week plan</button>
+      </form>
+    </div>
+    <div id="activityResult" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ================= FOOD CHECK ================= -->
+  <section class="page" id="page-food" data-page="food">
+    <header class="page-head">
+      <div>
+        <h2>Is it healthy?</h2>
+        <p>Type a food and get a clear answer for you or your little one.</p>
+      </div>
+      <span class="section-index">02 &mdash; Food check</span>
+    </header>
+
+    <form class="card" id="foodCheckForm">
+      <div class="big-input">
+        <label class="sr-only" for="foodCheckInput">Food or drink</label>
+        <input id="foodCheckInput" placeholder="Kiribath, pol sambol, unripe papaya..." maxlength="80" autocomplete="off" required>
+        <button class="btn btn-primary" type="submit">Check</button>
+      </div>
+      <div class="form-row">
+        <span class="mono-label">Checking for</span>
+        <div class="pill-group plain" data-role="who" role="group" aria-label="Checking for">
+          <button type="button" class="pill" data-who="mother">Pregnant or breastfeeding</button>
+          <button type="button" class="pill" data-who="child">Toddler or child</button>
+        </div>
+      </div>
+      <div class="stage-note" data-stage-note></div>
+      <hr>
+      <div class="chips" id="foodCheckChips">
+        <span class="mono-label">Try</span>
+        <button type="button" class="chip">Pol sambol</button>
+        <button type="button" class="chip">Kiribath</button>
+        <button type="button" class="chip">Thambili</button>
+        <button type="button" class="chip">Unripe papaya</button>
+        <button type="button" class="chip">Kola kanda</button>
+        <button type="button" class="chip">Milk tea with sugar</button>
+      </div>
+    </form>
+    <div id="foodCheckResult" aria-live="polite"></div>
+  </section>
+
+  <!-- ================= NUTRITION ================= -->
+  <section class="page" id="page-nutrition" data-page="nutrition">
+    <header class="page-head">
+      <div>
+        <h2>Nutrition, day by day</h2>
+        <p>Per-amount breakdown and what a few days of it does for you.</p>
+      </div>
+      <span class="section-index">03 &mdash; Analyzer</span>
+    </header>
+
+    <form class="card" id="nutritionForm">
+      <div class="nutrition-fields">
+        <label class="field grow"><span class="mono-label">Food</span>
+          <input id="nutFood" placeholder="For example kiribath, chocolate" maxlength="80" autocomplete="off" required>
+        </label>
+        <label class="field"><span class="mono-label">Amount (grams)</span>
+          <input id="nutGrams" type="number" min="1" max="2000" value="100" inputmode="numeric" required>
+        </label>
+        <label class="field"><span class="mono-label" id="nutDaysLabel">Eaten daily for 3 days</span>
+          <input id="nutDays" type="range" min="1" max="7" value="3" aria-labelledby="nutDaysLabel">
+        </label>
+      </div>
+      <div class="form-row between">
+        <div class="form-row">
+          <span class="mono-label">For</span>
+          <div class="pill-group plain" data-role="who" role="group" aria-label="Analyse for">
+            <button type="button" class="pill" data-who="mother">Pregnant or breastfeeding</button>
+            <button type="button" class="pill" data-who="child">Toddler or child</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Analyze</button>
+      </div>
+      <div class="stage-note" data-stage-note></div>
+      <hr>
+      <div class="chips" id="nutritionChips">
+        <span class="mono-label">Try</span>
+        <button type="button" class="chip" data-food="Milk chocolate" data-grams="50" data-days="3">Chocolate, 50 g, 3 days</button>
+        <button type="button" class="chip" data-food="Kiribath" data-grams="100" data-days="3">Kiribath, 100 g, 3 days</button>
+        <button type="button" class="chip" data-food="Red rice" data-grams="150" data-days="7">Red rice, 150 g, 7 days</button>
+        <button type="button" class="chip" data-food="Kavum" data-grams="80" data-days="2">Kavum, 80 g, 2 days</button>
+      </div>
+    </form>
+    <div id="nutritionResult" aria-live="polite"></div>
+  </section>
+
+  <!-- ================= SYMPTOMS ================= -->
+  <section class="page" id="page-symptoms" data-page="symptoms">
+    <header class="page-head">
+      <div>
+        <h2>What might this be?</h2>
+        <p>Choose the symptoms. Our rule engine suggests possible causes and where to get care.</p>
+      </div>
+      <span class="section-index">04 &mdash; Symptoms</span>
+    </header>
+
+    <div class="card">
+      <div class="sym-top">
+        <div class="pill-group plain" id="symGroup" role="group" aria-label="Symptoms for">
+          <button type="button" class="pill" data-group="pregnancy">During pregnancy</button>
+          <button type="button" class="pill" data-group="child">For my child</button>
+        </div>
+        <input id="symSearch" type="search" placeholder="Search symptoms" aria-label="Search symptoms">
+      </div>
+      <div class="symptom-grid" id="symptomGrid"></div>
+      <div class="sym-actions">
+        <button class="link-btn mono-label" id="symClear" type="button">Clear all</button>
+        <span id="symCount">No symptoms selected</span>
+        <button class="btn btn-primary" id="symAnalyse" type="button" disabled>Get suggestions</button>
+      </div>
+      <p class="fine-print">Guidance only, not a diagnosis. In an emergency call 1990 (Suwa Seriya ambulance).</p>
+    </div>
+    <div id="symResult" aria-live="polite"></div>
+  </section>
+
+  <!-- ================= ARTICLES ================= -->
+  <section class="page" id="page-articles" data-page="articles">
+    <header class="page-head">
+      <div>
+        <h2>Read and learn</h2>
+        <p>Short guides for mothers-to-be and parents of little ones.</p>
+      </div>
+      <span class="section-index">05 &mdash; Articles</span>
+    </header>
+    <div class="card search-card">
+      <input id="articleSearch" type="search" placeholder="Search articles, for example iron, dengue, first foods" aria-label="Search articles">
+      <div class="chips" id="articleCats"></div>
+    </div>
+    <p class="result-count mono-label" id="articleCount"></p>
+    <div class="article-grid" id="articleGrid"></div>
+  </section>
+
+  <!-- ================= COMMUNITY ================= -->
+  <section class="page" id="page-community" data-page="community">
+    <header class="page-head">
+      <div>
+        <h2>The community</h2>
+        <p>Ask, share, and read what other mothers are going through.</p>
+      </div>
+      <span class="section-index">06 &mdash; Forum</span>
+    </header>
+
+    <div class="community-layout">
+      <div class="card post-form gate small hidden" data-gate="community">
+        <span class="mono-label accent">Ask a question</span>
+        <p>Sign in to post a question, reply or like. Anyone can read the conversations.</p>
+        <div class="gate-actions">
+          <button type="button" class="btn btn-primary" data-auth="login" data-reason="Sign in to join the community.">Sign in</button>
+          <button type="button" class="btn btn-outline" data-auth="register" data-reason="Create a free account to join the community.">Create account</button>
+        </div>
+        <hr>
+        <p class="fine-print">Please be kind. Nothing here replaces your doctor's advice.</p>
+      </div>
+      <form class="card post-form" id="postForm" data-members="community">
+        <span class="mono-label accent">Ask a question</span>
+        <p class="posting-as">Posting as <strong id="postingAs"></strong></p>
+        <label class="field"><span class="mono-label">Topic</span>
+          <select id="postCategory"></select>
+        </label>
+        <label class="field"><span class="mono-label">Title</span>
+          <input id="postTitle" maxlength="120" required placeholder="What would you like to talk about?">
+        </label>
+        <label class="field"><span class="mono-label">Message</span>
+          <textarea id="postBody" rows="5" maxlength="3000" required placeholder="Share your experience or question"></textarea>
+        </label>
+        <label class="check"><input type="checkbox" id="postAnon"> Post without my name</label>
+        <button class="btn btn-primary" type="submit">Post</button>
+        <div id="postMsg" aria-live="polite"></div>
+        <hr>
+        <p class="fine-print">Please be kind. Nothing here replaces your doctor's advice. Never share phone numbers or medical records.</p>
+      </form>
+
+      <div class="community-feed">
+        <div class="card feed-tools">
+          <input id="postSearch" type="search" placeholder="Search posts" aria-label="Search posts">
+          <div class="chips" id="postCats"></div>
+        </div>
+        <div id="postList"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div>
+    <strong>AmmaCare</strong>
+    <p>Information here supports, but never replaces, your PHM midwife, MOH clinic or doctor.</p>
+  </div>
+  <div class="help-lines">
+    <p><span>Ambulance (Suwa Seriya)</span> <a href="tel:1990">1990</a></p>
+    <p><span>Mental health helpline</span> <a href="tel:1926">1926</a></p>
+  </div>
+</footer>
+
+<dialog id="articleDialog" aria-labelledby="articleTitle">
+  <button class="dialog-close" type="button" aria-label="Close article">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <article id="articleBody"></article>
+</dialog>
+
+<dialog id="authDialog" class="auth-dialog" aria-labelledby="authTitle">
+  <button class="dialog-close" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <div class="auth-inner">
+    <svg class="brand-leaf large" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29c0-9 3-17 12-24-2 12-6 20-12 24Zm0 0C16 21 12 14 4 9c1 10 5 17 12 20Z"/></svg>
+    <h2 id="authTitle">Welcome back</h2>
+    <p class="auth-reason hidden" id="authReason"></p>
+    <div class="pill-group auth-tabs" role="tablist">
+      <button type="button" class="pill active" data-auth-tab="login" role="tab">Sign in</button>
+      <button type="button" class="pill" data-auth-tab="register" role="tab">Create account</button>
+    </div>
+    <form id="authForm" novalidate>
+      <label class="field hidden" id="authNameField"><span class="mono-label">Your name</span>
+        <input id="authName" maxlength="40" autocomplete="name" placeholder="For example Dilini">
+      </label>
+      <label class="field"><span class="mono-label">Email</span>
+        <input id="authEmail" type="email" maxlength="120" autocomplete="email" required placeholder="you@example.com">
+      </label>
+      <label class="field"><span class="mono-label">Password</span>
+        <input id="authPassword" type="password" minlength="8" autocomplete="current-password" required>
+      </label>
+      <div class="auth-row">
+        <label class="check"><input type="checkbox" id="authShow"> Show password</label>
+        <span class="fine-print hidden" id="authPasswordHint">At least 8 characters</span>
+      </div>
+      <div id="authError"></div>
+      <button class="btn btn-primary auth-submit" id="authSubmit" type="submit">Sign in</button>
+    </form>
+    <button type="button" class="link-btn auth-guest" id="authGuest">Continue as a guest</button>
+    <p class="fine-print">Guests can use Food check, Nutrition, Symptoms and Articles. An account adds the trimester tracker, the weekly plan and the community.</p>
+  </div>
+</dialog>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
