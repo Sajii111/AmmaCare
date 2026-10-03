@@ -6,6 +6,7 @@ import { initSymptoms } from './symptoms.js';
 import { initArticles } from './articles.js';
 import { initCommunity } from './community.js';
 import { initAuth, loadSession, isMember } from './auth.js';
+import { initTheme } from './theme.js';
 
 const PAGES = {
   home: null,
@@ -166,6 +167,7 @@ if (intro) {
 }
 
 initAuth();
+initTheme();
 renderProfileBar();
 route();
 loadSession();
