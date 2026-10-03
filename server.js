@@ -15,6 +15,32 @@ app.disable('x-powered-by');
 const PORT = process.env.PORT || process.env.SUGA_PUBLIC_TARGET_PORT || 80;
 
 app.use(express.json({ limit: '100kb' }));
+
+// ---------- Articles from Firestore (admin-editable) ----------
+app.get('/data/articles.json', async (req, res, next) => {
+  try {
+    const snap = await db.collection('articles').get();
+    if (snap.empty) return next();
+    const toMs = t => {
+      if (!t) return 0;
+      if (typeof t === 'number') return t;
+      if (typeof t === 'string') return new Date(t).getTime() || 0;
+      if (typeof t.seconds === 'number') return t.seconds * 1000;
+      return 0;
+    };
+    const articles = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+    articles.sort((a, b) => {
+      const at = toMs(a.createdAt) || toMs(a.updatedAt);
+      const bt = toMs(b.createdAt) || toMs(b.updatedAt);
+      return bt - at;   // newest first
+    });
+    res.json(articles);
+  } catch (err) {
+    console.error('articles route error:', err.message);
+    next();
+  }
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(loadUser);
 mountAuthRoutes(app);
